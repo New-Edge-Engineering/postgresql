@@ -17,11 +17,21 @@
     repo: 'deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main'
     state: present
 
-- name: PostgreSQL | Install PostgreSQL
+- name: PostgreSQL | Ensure PostgreSQL is installed on Debian OS
   apt:
     name: "{{item}}"
     state: present
   environment: postgresql_env
+  with_items:
+    - "postgresql-{{postgresql_version}}"
+    - "postgresql-client-{{postgresql_version}}"
+
+- name: PostgreSQL | Ensure PostgreSQL is installed on EL OS
+  yum:
+    name: "{{item}}"
+    state: present
+  environment: postgresql_env
+  when: ansible_os_family == 'RedHat'
   with_items:
     - "postgresql-{{postgresql_version}}"
     - "postgresql-client-{{postgresql_version}}"
