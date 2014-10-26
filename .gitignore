@@ -7,3 +7,7 @@ Icon
 .Trashes
 .vagrant
 test
+
+# Eclipse generated files and folders
+.project
+.settings
