@@ -54,7 +54,11 @@ port = {{postgresql_port}}
 max_connections = {{postgresql_max_connections}}
 superuser_reserved_connections = {{postgresql_superuser_reserved_connections}}
 
-unix_socket_directories = '{{postgresql_unix_socket_directories|join(',')}}'
+{% if postgresql_version | version_compare('9.3', '>=') %}
+unix_socket_directories = '{{postgresql_unix_socket_directories|join(',')}}'        # (change requires restart)
+{% else %}
+unix_socket_directory = '/var/run/postgresql'          # (change requires restart)
+{% endif %}
 unix_socket_group       = '{{postgresql_unix_socket_group}}'
 unix_socket_permissions = {{postgresql_unix_socket_permissions}}
 
@@ -68,10 +72,12 @@ authentication_timeout  = {{postgresql_authentication_timeout}}
 ssl                     = {{'on' if postgresql_ssl else 'off'}}
 ssl_ciphers             = '{{postgresql_ssl_ciphers|join(':')}}'
 ssl_renegotiation_limit = {{postgresql_ssl_renegotiation_limit}}
+{% if postgresql_version | version_compare('9.2', '>=') %}
 ssl_cert_file           = '{{postgresql_ssl_cert_file}}'
 ssl_key_file            = '{{postgresql_ssl_key_file}}'
 ssl_ca_file             = '{{postgresql_ssl_ca_file}}'
 ssl_crl_file            = '{{postgresql_ssl_crl_file}}'
+{% endif %}
 password_encryption     = {{'on' if postgresql_password_encryption else 'off'}}
 db_user_namespace       = {{'on' if postgresql_db_user_namespace else 'off'}}
 
