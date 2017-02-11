@@ -1,23 +1,36 @@
 # file: postgresql/tasks/install.yml
 
-- name: PostgreSQL | Make sure the dependencies are installed
+- name: Debian | Make sure the dependencies are installed
   apt:
     pkg: "{{item}}"
     state: present
-  with_items: ["python-psycopg2", "python-pycurl"]
+  with_items:
+    - python-psycopg2
+    - python-pycurl
+    - python-pip
 
-- name: PostgreSQL | Add PostgreSQL repository apt-key
+- name: Debian | Make sure the python dependencies are installed
+  pip:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - urllib3
+    - pyopenssl
+    - ndg-httpsclient
+    - pyasn1
+
+- name: Debian | Add PostgreSQL repository apt-key
   apt_key:
     id: ACCC4CF8
     url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
     state: present
 
-- name: PostgreSQL | Add PostgreSQL repository
+- name: Debian | Add PostgreSQL repository
   apt_repository:
     repo: 'deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main'
     state: present
 
-- name: PostgreSQL | Ensure PostgreSQL is installed on Debian OS
+- name: Debian | Ensure PostgreSQL is installed on Debian OS
   apt:
     name: "{{item}}"
     state: present
@@ -26,7 +39,7 @@
     - "postgresql-{{postgresql_version}}"
     - "postgresql-client-{{postgresql_version}}"
 
-- name: PostgreSQL | Ensure PostgreSQL is installed on EL OS
+- name: Debian | Ensure PostgreSQL is installed on EL OS
   yum:
     name: "{{item}}"
     state: present
