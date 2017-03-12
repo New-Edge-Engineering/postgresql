@@ -1,11 +1,6 @@
 # file: postgresql/tasks/main.yml
 
-- include: install_debian.yml
-  when: ansible_os_family == 'Debian'
-  tags: [postgresql, postgresql-install]
-
-- include: install_redhat.yml
-  when: ansible_os_family == 'RedHat'
+- include: install.yml
   tags: [postgresql, postgresql-install]
 
 - include: extensions.yml
