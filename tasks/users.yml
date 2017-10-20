@@ -2,7 +2,7 @@
 
 - name: Users | Ensure PostgreSQL is running
   service:
-    name: postgresql
+    name: "{{ [ansible_os_family]|map('extract', {'Debian': 'postgresql', 'RedHat': ['postgresql', postgresql_version] | join('-')})|list|first }}"
     state: started
 
 - name: Users | Make sure the PostgreSQL users are present

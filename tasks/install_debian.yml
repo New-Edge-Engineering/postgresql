@@ -39,12 +39,10 @@
     - "postgresql-{{postgresql_version}}"
     - "postgresql-client-{{postgresql_version}}"
 
-- name: Debian | Ensure PostgreSQL is installed on EL OS
-  yum:
-    name: "{{item}}"
-    state: present
-  environment: "{{ postgresql_env }}"
-  when: ansible_os_family == 'RedHat'
-  with_items:
-    - "postgresql-{{postgresql_version}}"
-    - "postgresql-client-{{postgresql_version}}"
+- name: Debian | Make sure the postgres data directory exists
+  file:
+    path: "{{postgresql_data_directory}}"
+    owner: "{{postgresql_admin_user}}"
+    group: "{{postgresql_admin_user}}"
+    state: directory
+    mode: 0700

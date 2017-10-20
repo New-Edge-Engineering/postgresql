@@ -2,5 +2,5 @@
 
 - name: restart postgresql
   service:
-    name: postgresql
+    name: "{{ [ansible_os_family]|map('extract', {'Debian': 'postgresql', 'RedHat': ['postgresql', 'postgresql_version'] | join('-')})|list|first }}"
     state: restarted

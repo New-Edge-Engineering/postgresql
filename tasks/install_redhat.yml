@@ -1,12 +1,17 @@
 ---
-- name: PostgreSQL | Ensure postgreSQL rpm is installed
+- name: RedHat | Ensure postgreSQL rpm is installed
   yum:
-    name: http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm
+    name: "http://yum.postgresql.org/{{postgresql_version}}/redhat/rhel-6-x86_64/pgdg-centos{{postgresql_version_major}}{{postgresql_version_minor}}-{{postgresql_version}}-{{postgresql_version_patch}}.noarch.rpm"
     state: present
-  sudo: yes
+  become: yes
 
-- name: PostgreSQL | Ensure postgreSQL is installed
+- name: RedHat | Ensure postgreSQL is installed
   yum:
-    name: postgresql93-server
+    name: "postgresql{{postgresql_version_major}}{{postgresql_version_minor}}-server"
     state: present
-  sudo: yes
+  become: yes
+  register: installed
+
+- name: RedHat | Make sure the postgres data directory exists
+  command: "/usr/pgsql-{{ postgresql_version }}/bin/postgresql{{postgresql_version_major}}{{postgresql_version_minor}}-setup initdb"
+  when: installed|changed

@@ -1,6 +1,6 @@
 # file: postgresql/tasks/extensions/postgis.yml
 
-- name: PostgreSQL | Extensions | Make sure the postgis extensions are installed
+- name: Extensions | Make sure the postgis extensions are installed
   apt:
     name: "{{item}}"
     state: present

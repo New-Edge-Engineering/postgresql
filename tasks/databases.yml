@@ -1,8 +1,20 @@
 # file: postgresql/tasks/databases.yml
 
+- name: Databases | Ensure supporting software is installed
+  package:
+    name: "{{ item }}"
+  with_items:
+    - python-pip
+
+- name: Databases | Ensire supporting python is installed
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - psycopg2
+
 - name: Databases | Ensure PostgreSQL is running
   service:
-    name: postgresql
+    name: "{{ [ansible_os_family]|map('extract', {'Debian': 'postgresql', 'RedHat': ['postgresql', postgresql_version] | join('-')})|list|first }}"
     state: started
 
 - name: Databases | Make sure the PostgreSQL databases are present
@@ -17,15 +29,15 @@
   when: postgresql_databases|length > 0
 
 - name: Databases | Add hstore to the databases with the requirement
-  sudo: yes
-  sudo_user: "{{postgresql_admin_user}}"
+  become: yes
+  become_user: "{{postgresql_admin_user}}"
   shell: "psql {{item.name}} -c 'CREATE EXTENSION IF NOT EXISTS hstore;'"
   with_items: "{{ postgresql_databases }}"
   when: item.hstore is defined and item.hstore
 
 - name: Databases | Add uuid-ossp to the database with the requirement
-  sudo: yes
-  sudo_user: "{{postgresql_admin_user}}"
+  become: yes
+  become_user: "{{postgresql_admin_user}}"
   shell: "psql {{item.name}} -c 'CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";'"
   with_items: "{{ postgresql_databases }}"
   when: item.uuid_ossp is defined and item.uuid_ossp

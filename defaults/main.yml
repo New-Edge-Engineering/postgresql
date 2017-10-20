@@ -1,14 +1,17 @@
 # file: postgresql/defaults/main.yml
 
 # Basic settings
-postgresql_version: 9.3
+postgresql_version_major: 9
+postgresql_version_minor: 4
+postgresql_version_patch: 3
+postgresql_version: "{{postgresql_version_major}}.{{postgresql_version_minor}}"
 postgresql_encoding: 'UTF-8'
 postgresql_locale: 'en_US.UTF-8'
 
 postgresql_admin_user: "postgres"
 postgresql_default_auth_method: "trust"
 
-postgresql_cluster_name: "main"
+postgresql_cluster_name: "{{ [ansible_os_family]|map('extract', {'Debian': 'main', 'RedHat': 'data'})|list|first }}"
 postgresql_cluster_reset: false
 
 # Extensions
@@ -45,16 +48,17 @@ postgresql_pg_hba_custom: []
 # FILE LOCATIONS
 #------------------------------------------------------------------------------
 
+postgresql_directory_name: "{{ [ansible_os_family]|map('extract', {'Debian': 'postgresql', 'RedHat': 'pgsql'})|list|first }}"
 # Location of postgres configuration files here
-postgresql_conf_directory: "/etc/postgresql/{{postgresql_version}}/{{postgresql_cluster_name}}"
+postgresql_conf_directory: "/{{ [ansible_os_family]|map('extract', { 'Debian': [ 'etc', postgresql_directory_name, postgresql_version, postgresql_cluster_name ] | join('/'), 'RedHat': [ 'var', 'lib', postgresql_directory_name, postgresql_version, postgresql_cluster_name ] | join('/')})|list|first }}"
 # HBA (Host Based Authentication) file
 postgresql_hba_file: "{{postgresql_conf_directory}}/pg_hba.conf"
 # Ident configuration file
 postgresql_ident_file: "{{postgresql_conf_directory}}/pg_ident.conf"
 # Use data in another directory
-postgresql_data_directory: "/var/lib/postgresql/{{postgresql_version}}/{{postgresql_cluster_name}}"
+postgresql_data_directory: "/var/lib/{{ postgresql_directory_name }}/{{postgresql_version}}/{{postgresql_cluster_name}}"
 # If external_pid_file is not explicitly set, on extra PID file is written
-postgresql_external_pid_file: "/var/run/postgresql/{{postgresql_version}}-{{postgresql_cluster_name}}.pid"
+postgresql_external_pid_file: "/var/run/{{ postgresql_directory_name }}{{postgresql_version}}-{{postgresql_cluster_name}}.pid"
 
 #------------------------------------------------------------------------------
 # CONNECTIONS AND AUTHENTICATION
