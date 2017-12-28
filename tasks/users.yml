@@ -13,6 +13,7 @@
     login_host: "{{item.host | default('localhost')}}"
   with_items: "{{ postgresql_users }}"
   when: postgresql_users|length > 0
+  no_log: true
 
 - name: Users | Update the user privileges
   postgresql_user:
