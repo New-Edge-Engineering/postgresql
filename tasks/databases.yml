@@ -1,16 +1,18 @@
 # file: postgresql/tasks/databases.yml
-
+---
 - name: Databases | Ensure supporting software is installed
   package:
-    name: "{{ item }}"
-  with_items:
-    - python-pip
+    name: "python-pip"
+
+- name: upgrade pip
+  pip: 
+    name: pip
+    state: latest
 
 - name: Databases | Ensire supporting python is installed
   pip:
-    name: "{{ item }}"
-  with_items:
-    - psycopg2
+    name: "psycopg2"
+    extra_args: --disable-pip-version-check --no-python-version-warning
 
 - name: Databases | Ensure PostgreSQL is running
   service:

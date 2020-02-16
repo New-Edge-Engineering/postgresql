@@ -1,7 +1,8 @@
 ---
 - name: RedHat | Ensure postgreSQL rpm is installed
   yum:
-    name: "https://yum.postgresql.org/{{postgresql_version}}/redhat/rhel-7-x86_64/pgdg-centos{{postgresql_version_major}}{{postgresql_version_minor}}-{{postgresql_version}}-{{postgresql_version_patch}}.noarch.rpm"
+    # name: "https://yum.postgresql.org/{{postgresql_version}}/redhat/rhel-7-x86_64/pgdg-centos{{postgresql_version_major}}{{postgresql_version_minor}}-{{postgresql_version}}-{{postgresql_version_patch}}.noarch.rpm"
+    name: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
     state: present
   become: yes
 
@@ -11,6 +12,16 @@
     state: present
   become: yes
   register: installed
+
+- name: RedHat | Ensure postgreSQL headers are installed
+  yum:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+    - postgresql-devel
+    - python-devel
+  when: installed|changed and postgresql_databases|length > 0
 
 - name: RedHat | Make sure the postgres data directory exists
   command: "/usr/pgsql-{{ postgresql_version }}/bin/postgresql{{postgresql_version_major}}{{postgresql_version_minor}}-setup initdb"
